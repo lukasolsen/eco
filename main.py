@@ -6,15 +6,19 @@ from events.event import EventManager
 
 class Game:
     def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("World Simulation")
-        self.clock = pygame.time.Clock()
+        self.__setup_pygame()
+
         self.camera = Camera(WIDTH, HEIGHT)
         self.world = World(CHUNK_SIZE)
 
         self.event_manager = EventManager()
         self.options = Options()
+
+    def __setup_pygame(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("World Simulation")
+        self.clock = pygame.time.Clock()
 
     def draw_world(self):
         visible_chunks = self.world.get_visible_chunks(*self.camera.get_offset(), WIDTH, HEIGHT)

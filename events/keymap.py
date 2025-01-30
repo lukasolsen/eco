@@ -6,6 +6,11 @@ class Keymap:
         self.history = LimitedList[KeyMapEntry](100)
         self.options = Options()
 
+        self.actions = {
+            "toggle_debug": self.options.set_key("debug", not self.options.get_key("debug")),
+            "toggle_menu": self.options.set_key("menu", not self.options.get_key("menu"))
+        }
+
     def handle_key(self, key: str):
         keymap_entry = self.options.get_keymap_entry(key)
         if keymap_entry is None:
@@ -15,8 +20,6 @@ class Keymap:
 
         self.history.append(keymap_entry)
 
-        # Perform the action
-        if action == "toggle_debug":
-            self.options.set_key("debug", not self.options.get_key("debug"))
-        else:
-            print(f"Unknown action: {action}")
+        ac = self.actions[action]
+        if ac is not None:
+            ac()

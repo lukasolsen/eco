@@ -1,5 +1,6 @@
 from typing import TypeVar, cast, List
 from utils.key import KeyMapEntry
+from utils.singleton import Singleton
 
 WIDTH, HEIGHT = 1200, 1200  # Screen dimensions
 GRID_SIZE = 20  # Size of each grid cell
@@ -13,18 +14,12 @@ BLUE = (0, 0, 255)
 
 T = TypeVar("T", bool, int, float, str)
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
 class Options(metaclass=Singleton):
     def __init__(self):
         self.options: dict[str, bool | int | float | str] = {
             "debug": False,
+            "menu": False,
+            "command": False
         }
 
         self.blacklisted_keys = [
@@ -38,7 +33,7 @@ class Options(metaclass=Singleton):
                 "description": "Toggle debug mode"
             },
             {
-                "key": "esc",
+                "key": "return",
                 "action": "toggle_menu",
                 "description": "Toggle the menu"
             }
