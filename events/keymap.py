@@ -7,8 +7,8 @@ class Keymap:
         self.options = Options()
 
         self.actions = {
-            "toggle_debug": self.options.set_key("debug", not self.options.get_key("debug")),
-            "toggle_menu": self.options.set_key("menu", not self.options.get_key("menu"))
+            "toggle_debug": lambda: self.options.set_key("debug", not self.options.get_key("debug")),
+            "toggle_menu": lambda: self.options.set_key("menu", not self.options.get_key("menu"))
         }
 
     def handle_key(self, key: str):

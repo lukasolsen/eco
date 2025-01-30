@@ -2,7 +2,7 @@ from typing import TypeVar, cast, List
 from utils.key import KeyMapEntry
 from utils.singleton import Singleton
 
-WIDTH, HEIGHT = 1200, 1200  # Screen dimensions
+WIDTH, HEIGHT = 800, 600
 GRID_SIZE = 20  # Size of each grid cell
 CHUNK_SIZE = 16  # Number of grids per chunk
 
@@ -22,7 +22,7 @@ class Options(metaclass=Singleton):
             "command": False
         }
 
-        self.blacklisted_keys = [
+        self.blacklisted_keys: list[str] = [
             "up", "right", "down", "left"
         ]
 

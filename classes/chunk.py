@@ -14,7 +14,7 @@ class Chunk:
         """Builds the chunk using the given chunk_type data."""
         self.chunk_data = chunk_type["data"]
 
-    def get_data(self) -> typing.List[typing.List[str]]:
+    def get_data(self) -> list[list[str]] | str:
         """Returns the chunk's data."""
         return self.chunk_data
 
