@@ -2,7 +2,6 @@ from typing import TypeVar, cast, List
 from utils.key import KeyMapEntry
 from utils.singleton import Singleton
 
-WIDTH, HEIGHT = 800, 600
 GRID_SIZE = 20  # Size of each grid cell
 CHUNK_SIZE = 16  # Number of grids per chunk
 
@@ -19,7 +18,9 @@ class Options(metaclass=Singleton):
         self.options: dict[str, bool | int | float | str] = {
             "debug": False,
             "menu": False,
-            "command": False
+            "command": False,
+            "version": "0.1.0",
+            "max_chunk_load": 120,
         }
 
         self.blacklisted_keys: list[str] = [

@@ -2,14 +2,15 @@ import pygame
 from pygame.event import Event
 
 class Camera:
-    def __init__(self, width, height):
+    def __init__(self):
         self.offset_x = 0
         self.offset_y = 0
         self.zoom_level = 1.0
         self.dragging = False
         self.last_mouse_pos = (0, 0)
-        self.width = width
-        self.height = height
+
+        self.max_zoom = 2.0
+        self.min_zoom = 0.1
 
     def handle_event(self, event: Event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -26,10 +27,10 @@ class Camera:
                 self.offset_y -= dy
         elif event.type == pygame.MOUSEWHEEL:
             if event.y > 0:  # Scroll up
-                self.zoom_level += 0.1
+                self.zoom_level = min(self.max_zoom, self.zoom_level + 0.1)
             elif event.y < 0:  # Scroll down
-                self.zoom_level -= 0.1
-            self.zoom_level = max(0.1, self.zoom_level)  # Limit zoom level
+                self.zoom_level = max(self.min_zoom, self.zoom_level - 0.1)
+            self.zoom_level = max(self.min_zoom, self.zoom_level)
         elif event.type == pygame.KEYDOWN:
             self._handle_keydown(event)
 
@@ -44,7 +45,8 @@ class Camera:
             self.offset_y += 10
 
     def apply_offset(self, x, y):
-        return x - self.offset_x, y - self.offset_y
+        """Apply camera offset and zoom to world coordinates."""
+        return (x - self.offset_x) * self.zoom_level, (y - self.offset_y) * self.zoom_level
 
     def get_offset(self):
         return self.offset_x, self.offset_y

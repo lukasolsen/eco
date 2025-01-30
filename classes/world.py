@@ -2,7 +2,7 @@ import noise
 import random
 import typing
 from classes.chunk import Chunk
-from classes.biome import BiomeGenerator
+from constants.options import Options
 
 class World:
     def __init__(self, chunk_size: int = 16, grid_size: int = 20):
@@ -10,8 +10,6 @@ class World:
         self.chunk_size = chunk_size
         self.grid_size = grid_size
         self.loaded_chunks: typing.Dict[typing.Tuple[int, int], Chunk] = {}
-
-        self.biome_generator = BiomeGenerator(seed=self.seed)
 
         # Noise parameters
         self.base_scale = 100.0
@@ -127,14 +125,26 @@ class World:
 
         return chunk_data
 
-    def get_visible_chunks(self, offset_x: float, offset_y: float, screen_width: int, screen_height: int):
-        """Calculate the visible chunks based on the camera offset and screen size."""
-        start_x = int(offset_x / self.grid_size / self.chunk_size)
-        start_y = int(offset_y / self.grid_size / self.chunk_size)
-        end_x = int((offset_x + screen_width) / self.grid_size / self.chunk_size)
-        end_y = int((offset_y + screen_height) / self.grid_size / self.chunk_size)
+    def get_visible_chunks(self, offset_x: float, offset_y: float, screen_width: int, screen_height: int, zoom_level: float) -> typing.Set[typing.Tuple[int, int]]:
+        """Calculate the visible chunks based on the camera offset, zoom, and screen size."""
+        chunk_pixel_size = self.chunk_size * self.grid_size * zoom_level
+        max_chunks_loaded = Options().get_key("max_chunk_load")
+
+        start_x = int((offset_x - screen_width / 2) / chunk_pixel_size)
+        start_y = int((offset_y - screen_height / 2) / chunk_pixel_size)
+        end_x = int((offset_x + screen_width / 2) / chunk_pixel_size)
+        end_y = int((offset_y + screen_height / 2) / chunk_pixel_size)
 
         visible_chunks = {(x, y) for x in range(start_x - 1, end_x + 2) for y in range(start_y - 1, end_y + 2)}
+
+        if len(visible_chunks) > max_chunks_loaded:
+            center_x = (start_x + end_x) // 2
+            center_y = (start_y + end_y) // 2
+
+            chunk_distances = {(x, y): abs(x - center_x) + abs(y - center_y) for x, y in visible_chunks}
+            sorted_chunks = sorted(chunk_distances.items(), key=lambda x: x[1], reverse=True)
+            visible_chunks = {(x, y) for (x, y), _ in sorted_chunks[:max_chunks_loaded]}
+
         return visible_chunks
 
     def get_all_chunks(self):
